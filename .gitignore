@@ -4,3 +4,7 @@ build
 devel
 
 profile.tmp
+
+ros/src/.idea/
+ros/src/cmake-build-debug/
+ros/src/venv/
