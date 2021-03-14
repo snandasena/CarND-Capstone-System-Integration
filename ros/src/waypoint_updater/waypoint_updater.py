@@ -4,6 +4,7 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint
 from scipy.spatial import KDTree
+import numpy as np
 
 import math
 
@@ -23,7 +24,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 200  # Number of waypoints we will publish. You can change this number
-
+MAX_DECEL = 0.5
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -41,13 +42,11 @@ class WaypointUpdater(object):
         self.base_waypoints = None
         self.waypoints_2d = None
         self.waypoint_tree = None
+        self.base_lane = None
+        self.stopline_wp_idx = -1
 
         # rospy.spin()
         self.loop()
-
-    def publish_waypoints(self):
-        # TODO: implement here
-        pass
 
     def loop(self):
         rate = rospy.Rate(50)
@@ -57,14 +56,49 @@ class WaypointUpdater(object):
 
             rate.sleep()
 
+    def publish_waypoints(self):
+        lane = Lane()
+        closest_idx = self.get_closest_waypoint_idx()
+        farthest_idx = closest_idx + LOOKAHEAD_WPS
+        base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
+
+        if (self.stopline_wp_idx == -1) or (self.stopline_wp_idx >= farthest_idx):
+            lane.waypoints = base_waypoints
+        else:
+            lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
+
+        self.final_waypoints_pub.publish(lane)
+
+    def get_closest_waypoint_idx(self):
+        x = self.pose.pose.position.x
+        y = self.pose.pose.position.y
+
+        closset_indx = self.waypoint_tree.query([x, y], 1)[1]
+        # Check if closset is ahead or behind the vehicle
+        closest_coord = self.waypoints_2d[closset_indx]
+        prev_coord = self.waypoints_2d[closset_indx - 1]
+
+        # Equation for hyperplane through closest coordinates
+        cl_vect = np.array(closest_coord)
+        prev_vect = np.array(prev_coord)
+        pos_vect = np.array([x, y])
+
+        val = np.dot(cl_vect - prev_vect, pos_vect - cl_vect)
+        if val > 0:
+            closset_indx = (closset_indx + 1) % len(self.waypoints_2d)
+
+        return closset_indx
+
+    def decelerate_waypoints(self, waypoints, closest_idx):
+        pass
+
     def pose_cb(self, msg):
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
-        # TODO: Implement
         self.base_waypoints = waypoints
         if not self.waypoints_2d:
-            self.waypoints_2d = [[waypoint.pose.position.x, waypoint.pose.position.y] for waypoint in
+            self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in
                                  waypoints.waypoints]
 
             self.waypoint_tree = KDTree(self.waypoints_2d)
