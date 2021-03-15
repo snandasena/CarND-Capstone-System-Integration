@@ -42,3 +42,12 @@ A package which loads the static waypoint data and publishes to `/base_waypoints
 
 ###### (path_to_project_repo)/ros/src/waypoint_follower/
 A package containing code from [Autoware](https://github.com/Autoware-AI/autoware.ai) which subscribes to `/final_waypoints` and publishes target vehicle linear and angular velocities in the form of twist commands to the `/twist_cmd` topic.
+
+### References
+* https://www.udacity.com/course/self-driving-car-engineer-nanodegree--nd013
+* http://ais.informatik.uni-freiburg.de/teaching/ss18/robotics/index_en.php
+* https://github.com/snandasena/path-plnaning-n-localization
+* https://thinkautonomous.medium.com/
+
+### Acknowledgments
+Big thank you to [Udacity](https://www.udacity.com) for providing the template code and simulator for this project.
