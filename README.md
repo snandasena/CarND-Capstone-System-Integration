@@ -29,3 +29,16 @@ Carla is equipped with a drive-by-wire (dbw) system, meaning the throttle, brake
 Additionally, this node will subscribe to `/vehicle/dbw_enabled`, which indicates if the car is under dbw or driver control. This node will publish **throttle**, **brake**, and **steering** commands to the `/vehicle/throttle_cmd`, `/vehicle/brake_cmd`, and `/vehicle/steering_cmd` topics.
 
 <img src="imgs/dbw-node-ros-graph.png" width="700" height="180" />
+
+
+###### (path_to_project_repo)/ros/src/styx/
+A package that contains a server for communicating with the simulator, and a bridge to translate and publish simulator messages to ROS topics.
+
+###### (path_to_project_repo)/ros/src/styx_msgs/
+A package which includes definitions of the custom ROS message types used in the project.
+
+###### (path_to_project_repo)/ros/src/waypoint_loader/
+A package which loads the static waypoint data and publishes to `/base_waypoints`.
+
+###### (path_to_project_repo)/ros/src/waypoint_follower/
+A package containing code from [Autoware](https://github.com/Autoware-AI/autoware.ai) which subscribes to `/final_waypoints` and publishes target vehicle linear and angular velocities in the form of twist commands to the `/twist_cmd` topic.
