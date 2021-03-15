@@ -52,6 +52,7 @@ A package containing code from [Autoware](https://github.com/Autoware-AI/autowar
 * http://ais.informatik.uni-freiburg.de/teaching/ss18/robotics/index_en.php
 * https://github.com/snandasena/path-plnaning-n-localization
 * https://thinkautonomous.medium.com/
+* http://wiki.ros.org/kinetic/Installation
 
 ### Acknowledgments
 Big thank you to [Udacity](https://www.udacity.com) for providing the template code and simulator for this project.
