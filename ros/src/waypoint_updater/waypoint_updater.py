@@ -24,7 +24,7 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 200  # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 100  # Number of waypoints we will publish. You can change this number
 MAX_DECEL = 0.5
 
 
@@ -38,9 +38,9 @@ class WaypointUpdater(object):
         self.waypoints_2d = None
         self.waypoint_tree = None
 
-        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
         rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
+        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
 
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
         # rospy.spin()
@@ -74,8 +74,22 @@ class WaypointUpdater(object):
         return closest_idx
 
     def publish_waypoints(self):
-        final_lane = self.generate_lane()
-        self.final_waypoints_pub.publish(final_lane)
+        # final_lane = self.generate_lane()
+
+        lane = Lane()
+
+        closest_idx = self.get_closest_waypoint_idx()
+        farthest_idx = closest_idx + LOOKAHEAD_WPS
+        base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
+
+        if (self.stopline_wp_idx == -1) or (self.stopline_wp_idx >= farthest_idx):
+            lane.waypoints = base_waypoints
+        else:
+            lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
+
+        self.final_waypoints_pub.publish(lane)
+
+
 
     def generate_lane(self):
         lane = Lane()
@@ -92,7 +106,7 @@ class WaypointUpdater(object):
         return lane
 
     def decelerate_waypoints(self, waypoints, closest_idx):
-        temp = []
+        dec_waypoints = []
         for i, wp in enumerate(waypoints):
 
             p = Waypoint()
@@ -106,9 +120,9 @@ class WaypointUpdater(object):
                 vel = 0.0
 
             p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
-            temp.append(p)
+            dec_waypoints.append(p)
 
-        return temp
+        return dec_waypoints
 
     def pose_cb(self, msg):
         self.pose = msg
@@ -147,4 +161,4 @@ if __name__ == '__main__':
     try:
         WaypointUpdater()
     except rospy.ROSInterruptException:
-        rospy.logerr('Could not start waypoint updater node.')
+        rospy.logerr('Could not start way point updater node.')
