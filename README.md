@@ -23,3 +23,9 @@ This package contains the waypoint updater node: `waypoint_updater.py`. The purp
 
 <img src="imgs/waypoint-updater-ros-graph.png" width="700" height="180" />
 
+###### (path_to_project_repo)/ros/src/twist_controller/
+
+Carla is equipped with a drive-by-wire (dbw) system, meaning the throttle, brake, and steering have electronic control. This package contains the files that are responsible for control of the vehicle: the node `dbw_node.py` and the file `twist_controller.py`, along with a pid and lowpass filter that you can use in our implementation. The dbw_node subscribes to the `/current_velocity` topic along with the `/twist_cmd` topic to receive target linear and angular velocities. 
+Additionally, this node will subscribe to `/vehicle/dbw_enabled`, which indicates if the car is under dbw or driver control. This node will publish **throttle**, **brake**, and **steering** commands to the `/vehicle/throttle_cmd`, `/vehicle/brake_cmd`, and `/vehicle/steering_cmd` topics.
+
+<img src="imgs/dbw-node-ros-graph.png" width="700" height="180" />
