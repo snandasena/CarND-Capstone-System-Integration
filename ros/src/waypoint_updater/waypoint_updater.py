@@ -25,7 +25,6 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 100  # Number of waypoints we will publish. You can change this number
-MAX_DECEL = 0.5
 
 
 class WaypointUpdater(object):
@@ -89,8 +88,6 @@ class WaypointUpdater(object):
 
         self.final_waypoints_pub.publish(lane)
 
-
-
     def generate_lane(self):
         lane = Lane()
 
@@ -107,15 +104,15 @@ class WaypointUpdater(object):
 
     def decelerate_waypoints(self, waypoints, closest_idx):
         dec_waypoints = []
-        for i, wp in enumerate(waypoints):
 
+        for i, wp in enumerate(waypoints):
             p = Waypoint()
             p.pose = wp.pose
 
             # Distance includes 2 waypoints back from line so front of car stops at line
             stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0)
             dist = self.distance(waypoints, i, stop_idx)
-            vel = math.sqrt(2 * MAX_DECEL * dist)
+            vel = math.sqrt(1.0 * dist)
             if vel < 1.0:
                 vel = 0.0
 
