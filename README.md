@@ -53,6 +53,8 @@ A package containing code from [Autoware](https://github.com/Autoware-AI/autowar
 * https://github.com/snandasena/path-plnaning-n-localization
 * https://thinkautonomous.medium.com/
 * http://wiki.ros.org/kinetic/Installation
+* https://github.com/gabfec/CarND-Capstone
+* https://rsl.ethz.ch/education-students/lectures/ros.html
 
 ### Acknowledgments
 Big thank you to [Udacity](https://www.udacity.com) for providing the template code and simulator for this project.
